@@ -7,10 +7,11 @@
   in the source code even though the page only displays a percentage.
 */
 const journeyData = {
-  startDate: "2026-10-30", // Change to your real challenge start date.
+  startDate: "2026-11-01", // Change to your real challenge start date.
   dailyEntries: [
      { date: "2026-11-01", amount: 4000 },
-     { date: "2026-10-31", amount: 5000 }
+     { date: "2026-10-31", amount: 5000 },
+     { date: "2026-10-30", amount: 5100 }
   ]
 };
 
