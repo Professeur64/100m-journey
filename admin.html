@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>لوحة تحكم 100M JOURNEY</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&family=DM+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#101820;--panel:#192834;--gold:#b7a27a;--light:#d4c19b;--white:#e9e9e3;--muted:#929da5;--line:#ffffff20;--red:#c06a5f;--green:#7fae86}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--white);font-family:"DM Sans",sans-serif;min-height:100vh}
+.wrap{width:min(760px,calc(100% - 32px));margin:0 auto;padding:30px 0 70px}
+h1{font-family:Manrope;font-weight:800;font-size:26px;margin:0 0 4px}
+h1 span{color:var(--gold)}
+.sub{color:var(--muted);font-size:13px;margin:0 0 26px}
+.panel{background:linear-gradient(135deg,#192834,#14212b);border:1px solid var(--line);border-radius:10px;padding:22px;margin-bottom:20px}
+.panel h2{font-family:Manrope;font-size:15px;margin:0 0 16px;color:var(--light)}
+label{display:block;font:11px "DM Mono";letter-spacing:.5px;color:var(--muted);margin-bottom:6px}
+input[type=text],input[type=password],input[type=date],input[type=number]{width:100%;background:#0e1822;border:1px solid var(--line);color:var(--white);padding:10px 12px;border-radius:6px;font-family:"DM Sans";font-size:14px}
+input:focus{outline:1px solid var(--gold)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.row3{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:14px;margin-bottom:14px}
+@media(max-width:600px){.row,.row3{grid-template-columns:1fr}}
+button{cursor:pointer;border:none;border-radius:6px;padding:11px 18px;font-family:"DM Sans";font-weight:600;font-size:13px}
+.btn-gold{background:var(--gold);color:#17222c}
+.btn-outline{background:transparent;border:1px solid var(--line);color:var(--white)}
+.btn-danger{background:transparent;border:1px solid var(--red);color:var(--red);padding:6px 10px;font-size:12px}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th{text-align:right;font:10px "DM Mono";letter-spacing:.5px;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:6px 8px;border-bottom:1px solid var(--line)}
+td input{padding:7px 8px;font-size:13px}
+.status{font:12px "DM Mono";padding:10px 12px;border-radius:6px;margin-top:14px;display:none;white-space:pre-wrap}
+.status.ok{display:block;background:#7fae8622;color:var(--green);border:1px solid #7fae8655}
+.status.err{display:block;background:#c06a5f22;color:var(--red);border:1px solid #c06a5f55}
+.status.loading{display:block;background:#ffffff10;color:var(--muted)}
+.hint{font-size:11px;color:var(--muted);line-height:1.8;margin-top:10px}
+.hint a{color:var(--gold)}
+.total-line{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.total-line strong{font:700 22px Manrope}
+.toggle{font:11px "DM Mono";color:var(--gold);cursor:pointer;display:inline-block;margin-top:4px}
+#settings-body{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>100<span>M</span> JOURNEY — لوحة التحكم</h1>
+  <p class="sub">تحديث المبلغ اليومي مباشرة على GitHub، بدون فتح أي ملف كود.</p>
+
+  <div class="panel">
+    <h2>إعدادات المستودع (مرة واحدة فقط)</h2>
+    <span class="toggle" id="toggle-settings">إظهار / إخفاء ▾</span>
+    <div id="settings-body">
+      <div class="row3" style="margin-top:14px">
+        <div><label>اسم المستخدم / المنظمة (owner)</label><input type="text" id="f-owner" placeholder="مثال: baraa"></div>
+        <div><label>اسم المستودع (repo)</label><input type="text" id="f-repo" placeholder="مثال: 100m-journey"></div>
+        <div><label>الفرع (branch)</label><input type="text" id="f-branch" value="main"></div>
+      </div>
+      <div class="row" style="margin-bottom:0">
+        <div><label>مسار الملف</label><input type="text" id="f-path" value="script.js"></div>
+        <div><label>GitHub Token (fine-grained، صلاحية Contents: Read & write على هذا المستودع فقط)</label><input type="password" id="f-token" placeholder="github_pat_..."></div>
+      </div>
+      <p class="hint">
+        أنشئ التوكن من <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → Settings → Developer settings → Fine-grained tokens</a>،
+        واختر "Only select repositories" وحدد هذا المستودع فقط، وفعّل صلاحية <b>Contents: Read and write</b> حصراً.
+        يُحفظ التوكن في متصفحك فقط (localStorage) ولا يُرسل لأي جهة سوى GitHub مباشرة.
+      </p>
+      <button class="btn-outline" id="btn-save-settings" style="margin-top:12px">حفظ الإعدادات محلياً</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>إضافة مبلغ اليوم</h2>
+    <div class="row">
+      <div><label>التاريخ</label><input type="date" id="q-date"></div>
+      <div><label>المبلغ (DH)</label><input type="number" step="0.01" min="0" id="q-amount" placeholder="مثال: 440"></div>
+    </div>
+    <button class="btn-gold" id="btn-quick-add">إضافة المبلغ ونشره على GitHub</button>
+    <div class="status" id="status-quick"></div>
+  </div>
+
+  <div class="panel">
+    <h2>تاريخ بداية الرحلة</h2>
+    <div class="row" style="grid-template-columns:1fr">
+      <div><label>startDate</label><input type="date" id="q-start"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>كل الإدخالات</h2>
+    <div class="total-line">
+      <span class="hint" style="margin:0">المجموع الحالي</span>
+      <strong id="total-display">—</strong>
+    </div>
+    <table>
+      <thead><tr><th>التاريخ</th><th>المبلغ</th><th></th></tr></thead>
+      <tbody id="entries-body"><tr><td colspan="3" class="hint">اضغط "تحميل البيانات الحالية" أولاً.</td></tr></tbody>
+    </table>
+    <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+      <button class="btn-outline" id="btn-load">تحميل البيانات الحالية من GitHub</button>
+      <button class="btn-outline" id="btn-add-row">+ سطر جديد</button>
+      <button class="btn-gold" id="btn-save-all">حفظ كل التعديلات على GitHub</button>
+    </div>
+    <div class="status" id="status-main"></div>
+  </div>
+</div>
+
+<script>
+const LS_KEY = "journeyAdminSettings";
+
+function loadSettings() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY) || "{}"); } catch { return {}; }
+}
+function saveSettingsToStorage(s) {
+  localStorage.setItem(LS_KEY, JSON.stringify(s));
+}
+function getFormSettings() {
+  return {
+    owner: document.getElementById("f-owner").value.trim(),
+    repo: document.getElementById("f-repo").value.trim(),
+    branch: document.getElementById("f-branch").value.trim() || "main",
+    path: document.getElementById("f-path").value.trim() || "script.js",
+    token: document.getElementById("f-token").value.trim(),
+  };
+}
+function applySettingsToForm(s) {
+  if (!s) return;
+  document.getElementById("f-owner").value = s.owner || "";
+  document.getElementById("f-repo").value = s.repo || "";
+  document.getElementById("f-branch").value = s.branch || "main";
+  document.getElementById("f-path").value = s.path || "script.js";
+  document.getElementById("f-token").value = s.token || "";
+}
+
+document.getElementById("toggle-settings").addEventListener("click", () => {
+  const el = document.getElementById("settings-body");
+  el.style.display = el.style.display === "none" || !el.style.display ? "block" : "none";
+});
+document.getElementById("btn-save-settings").addEventListener("click", () => {
+  saveSettingsToStorage(getFormSettings());
+  setStatus("status-main", "ok", "تم حفظ الإعدادات محلياً في هذا المتصفح.");
+});
+
+function setStatus(id, type, msg) {
+  const el = document.getElementById(id);
+  el.className = "status " + type;
+  el.textContent = msg;
+}
+
+function utf8ToBase64(str) {
+  return btoa(unescape(encodeURIComponent(str)));
+}
+function base64ToUtf8(b64) {
+  return decodeURIComponent(escape(atob(b64.replace(/\n/g, ""))));
+}
+
+async function ghGetFile(s) {
+  const url = `https://api.github.com/repos/${s.owner}/${s.repo}/contents/${encodeURIComponent(s.path)}?ref=${encodeURIComponent(s.branch)}`;
+  const res = await fetch(url, {
+    headers: {
+      "Authorization": "Bearer " + s.token,
+      "Accept": "application/vnd.github+json",
+    },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`فشل التحميل (${res.status}): ${body.slice(0, 300)}`);
+  }
+  const json = await res.json();
+  return { content: base64ToUtf8(json.content), sha: json.sha };
+}
+
+async function ghPutFile(s, newContent, sha, message) {
+  const url = `https://api.github.com/repos/${s.owner}/${s.repo}/contents/${encodeURIComponent(s.path)}`;
+  const res = await fetch(url, {
+    method: "PUT",
+    headers: {
+      "Authorization": "Bearer " + s.token,
+      "Accept": "application/vnd.github+json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      message,
+      content: utf8ToBase64(newContent),
+      sha,
+      branch: s.branch,
+    }),
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`فشل الحفظ (${res.status}): ${body.slice(0, 300)}`);
+  }
+  return res.json();
+}
+
+function parseJourneyData(src) {
+  const startMatch = src.match(/startDate:\s*"(\d{4}-\d{2}-\d{2})"/);
+  const startDate = startMatch ? startMatch[1] : "";
+  const entries = [];
+  const re = /\{\s*date:\s*"(\d{4}-\d{2}-\d{2})"\s*,\s*amount:\s*(-?\d+(?:\.\d+)?)\s*\}/g;
+  let m;
+  while ((m = re.exec(src))) {
+    entries.push({ date: m[1], amount: Number(m[2]) });
+  }
+  entries.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+  return { startDate, entries };
+}
+
+function generateBlock(startDate, entries) {
+  const sorted = [...entries].sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+  const lines = sorted.map(e => `     { date: "${e.date}", amount: ${e.amount} }`).join(",\n");
+  return `const journeyData = {\n  startDate: "${startDate}", // Change to your real challenge start date.\n  dailyEntries: [\n${lines}\n  ]\n};`;
+}
+
+function replaceJourneyBlock(src, newBlock) {
+  const marker = "const journeyData = {";
+  const start = src.indexOf(marker);
+  if (start === -1) throw new Error('لم يتم العثور على "const journeyData = {" في الملف.');
+  let i = start + marker.length - 1;
+  let depth = 0, end = -1;
+  for (; i < src.length; i++) {
+    if (src[i] === "{") depth++;
+    else if (src[i] === "}") { depth--; if (depth === 0) { end = i; break; } }
+  }
+  if (end === -1) throw new Error("تعذر إيجاد نهاية الكتلة journeyData.");
+  const semi = src.indexOf(";", end);
+  const endIdx = semi === -1 ? end + 1 : semi + 1;
+  return src.slice(0, start) + newBlock + src.slice(endIdx);
+}
+
+let currentEntries = [];
+let currentStartDate = "";
+let currentSha = "";
+let currentSrc = "";
+
+function renderEntriesTable() {
+  const body = document.getElementById("entries-body");
+  if (!currentEntries.length) {
+    body.innerHTML = '<tr><td colspan="3" class="hint">لا توجد إدخالات.</td></tr>';
+  } else {
+    body.innerHTML = currentEntries.map((e, i) => `
+      <tr data-i="${i}">
+        <td><input type="date" value="${e.date}" class="e-date"></td>
+        <td><input type="number" step="0.01" min="0" value="${e.amount}" class="e-amount"></td>
+        <td><button class="btn-danger e-del">حذف</button></td>
+      </tr>`).join("");
+  }
+  const total = currentEntries.reduce((s, e) => s + (Number(e.amount) > 0 ? Number(e.amount) : 0), 0);
+  document.getElementById("total-display").textContent = total.toLocaleString("en-US") + " DH  (" + (total / 1000000 * 100).toFixed(1) + "%)";
+  document.getElementById("q-start").value = currentStartDate;
+}
+
+function readTableIntoState() {
+  const rows = [...document.querySelectorAll("#entries-body tr[data-i]")];
+  currentEntries = rows.map(r => ({
+    date: r.querySelector(".e-date").value,
+    amount: Number(r.querySelector(".e-amount").value),
+  })).filter(e => e.date && e.amount >= 0);
+}
+
+document.getElementById("entries-body").addEventListener("click", (ev) => {
+  if (ev.target.classList.contains("e-del")) {
+    const tr = ev.target.closest("tr");
+    const i = Number(tr.dataset.i);
+    currentEntries.splice(i, 1);
+    renderEntriesTable();
+  }
+});
+
+document.getElementById("btn-add-row").addEventListener("click", () => {
+  readTableIntoState();
+  currentEntries.unshift({ date: new Date().toISOString().slice(0, 10), amount: 0 });
+  renderEntriesTable();
+});
+
+document.getElementById("btn-load").addEventListener("click", async () => {
+  const s = getFormSettings();
+  if (!s.owner || !s.repo || !s.token) {
+    setStatus("status-main", "err", "أكمل إعدادات المستودع والتوكن أولاً.");
+    return;
+  }
+  setStatus("status-main", "loading", "جارٍ التحميل...");
+  try {
+    const { content, sha } = await ghGetFile(s);
+    currentSrc = content;
+    currentSha = sha;
+    const parsed = parseJourneyData(content);
+    currentEntries = parsed.entries;
+    currentStartDate = parsed.startDate;
+    renderEntriesTable();
+    setStatus("status-main", "ok", "تم تحميل البيانات الحالية بنجاح.");
+  } catch (e) {
+    setStatus("status-main", "err", e.message);
+  }
+});
+
+async function saveToGithub(message) {
+  const s = getFormSettings();
+  if (!s.owner || !s.repo || !s.token) {
+    throw new Error("أكمل إعدادات المستودع والتوكن أولاً.");
+  }
+  // دائماً نحمّل أحدث نسخة أولاً لتفادي تعارض sha
+  const { content, sha } = await ghGetFile(s);
+  currentStartDate = document.getElementById("q-start").value || currentStartDate;
+  const newBlock = generateBlock(currentStartDate, currentEntries);
+  const newSrc = replaceJourneyBlock(content, newBlock);
+  const result = await ghPutFile(s, newSrc, sha, message);
+  currentSrc = newSrc;
+  currentSha = result.content.sha;
+  return result;
+}
+
+document.getElementById("btn-save-all").addEventListener("click", async () => {
+  readTableIntoState();
+  setStatus("status-main", "loading", "جارٍ الحفظ على GitHub...");
+  try {
+    await saveToGithub("Update journey entries via admin panel");
+    renderEntriesTable();
+    setStatus("status-main", "ok", "تم الحفظ بنجاح. سيُعاد نشر GitHub Pages تلقائياً خلال دقيقة تقريباً.");
+  } catch (e) {
+    setStatus("status-main", "err", e.message);
+  }
+});
+
+document.getElementById("btn-quick-add").addEventListener("click", async () => {
+  const date = document.getElementById("q-date").value || new Date().toISOString().slice(0, 10);
+  const amount = Number(document.getElementById("q-amount").value);
+  if (!amount || amount <= 0) {
+    setStatus("status-quick", "err", "أدخل مبلغاً صحيحاً أكبر من صفر.");
+    return;
+  }
+  setStatus("status-quick", "loading", "جارٍ التحميل والحفظ...");
+  try {
+    const s = getFormSettings();
+    const { content } = await ghGetFile(s);
+    const parsed = parseJourneyData(content);
+    parsed.entries.push({ date, amount });
+    currentEntries = parsed.entries;
+    currentStartDate = parsed.startDate || currentStartDate;
+    await saveToGithub(`Add daily entry ${date}: ${amount} DH`);
+    renderEntriesTable();
+    document.getElementById("q-amount").value = "";
+    setStatus("status-quick", "ok", `تمت إضافة ${amount} DH بتاريخ ${date} ونشرها على GitHub.`);
+  } catch (e) {
+    setStatus("status-quick", "err", e.message);
+  }
+});
+
+// تهيئة أولية
+(function init() {
+  applySettingsToForm(loadSettings());
+  document.getElementById("q-date").value = new Date().toISOString().slice(0, 10);
+})();
+</script>
+</body>
+</html>
