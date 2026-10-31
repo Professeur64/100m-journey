@@ -9,7 +9,7 @@
 const journeyData = {
   startDate: "2026-11-01", // Change to your real challenge start date.
   dailyEntries: [
-     { date: "2026-11-01", amount: 2000 }
+     { date: "2026-11-01", amount: 3000 }
   ]
 };
 
