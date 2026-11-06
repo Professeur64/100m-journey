@@ -11,7 +11,8 @@ const journeyData = {
   dailyEntries: [
      { date: "2026-11-01", time: "20:10", amount: 4000, note: "The first recorded step." },
      { date: "2026-11-03", time: "20:10", amount: 200, note: "The first recorded step." },
-     { date: "2026-11-04", time: "15:25", amount: 500, note: "The first recorded step." }
+     { date: "2026-11-04", time: "15:25", amount: 500, note: "The first recorded step." },
+     { date: "2026-11-06", time: "19:17", amount: 150, note: "The first recorded step." }
   ]
 };
 
